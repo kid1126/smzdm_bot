@@ -88,9 +88,17 @@ class SmzdmClient:
         self._http = httpx.Client(timeout=self.TIMEOUT)
 
         # 设备信息
-        self._version = self._cookies.get("device_smzdm_version", DEFAULT_VERSION)
+        self._version = self._cookies.get("device_smzdm_version") or self._cookies.get(
+            "v", DEFAULT_VERSION
+        )
         self._platform = self._cookies.get("device_smzdm", "android")
-        self._device_id = self._cookies.get("device_id", random_string(32))
+        self._device_id = (
+            self._cookies.get("device_id")
+            or self._cookies.get("pr_device_id")
+            or self._cookies.get("pr_new_device_id")
+            or self._cookies.get("device_rid")
+            or random_string(32)
+        )
 
         # SK: 优先使用配置，否则自动生成
         if config.sk:
